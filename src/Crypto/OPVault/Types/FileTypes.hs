@@ -14,7 +14,6 @@ data Profile = Profile
     , pUpdatedAt     :: Int
     , pLastUpdatedBy :: Text
     , pProfileName   :: Text
-    , pPasswordHint  :: Text
 
     , pIterations    :: Int
     , pMasterKey     :: Base64
@@ -30,7 +29,6 @@ instance FromJSON Profile where
         obj .: "updatedAt"     <*>
         obj .: "lastUpdatedBy" <*>
         obj .: "profileName"   <*>
-        obj .: "passwordHint"  <*>
         obj .: "iterations"    <*>
         obj .: "masterKey"     <*>
         obj .: "overviewKey"   <*>
