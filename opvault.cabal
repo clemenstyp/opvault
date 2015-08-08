@@ -13,6 +13,7 @@ build-type:          Simple
 cabal-version:       >=1.10
 data-files:          ./test-vault/default/*.js
                    , ./test-vault/default/*.attachment
+                   , ./test-vault/default-bad/*.js
 
 library
   hs-source-dirs:      src
@@ -38,6 +39,7 @@ library
                      , directory
                      , exceptions
                      , hashable
+                     , hspec
                      , memory
                      , text
                      , transformers
@@ -52,6 +54,7 @@ test-suite opv-spec
   build-depends:       base
                      , opvault
                      , hspec
+                     , unordered-containers
 
 source-repository head
   type:     git

@@ -14,6 +14,7 @@ import Prelude hiding (readFile)
 import Control.Applicative ((<|>), (*>), (<*))
 import Control.Concurrent.Async (Concurrently(..))
 import Control.Exception (IOException, catch)
+import Control.Monad ((<=<))
 import Data.Aeson (FromJSON, decode)
 import Data.Attoparsec.ByteString.Char8 (Parser, parseOnly, endOfInput, string, char, many', many1', satisfy)
 import Data.ByteString.Char8 (ByteString, pack)
@@ -56,7 +57,7 @@ readFile' path = catch
     (\(_::IOException) -> return . Left $ "Unable to read file at " ++ path)
 
 readFile :: MonadIO m => FilePath -> ResultT m ByteString
-readFile = liftEitherM . io . readFile'
+readFile = liftEither <=< io . readFile'
 
 dropLeft :: Either a b -> Maybe b
 dropLeft (Left _)  = Nothing
