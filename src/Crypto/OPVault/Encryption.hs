@@ -38,7 +38,7 @@ derivedKey Profile{..} (Password pass) =
                          (Parameters pIterations 512)
                          pass
                          (rawBytes pSalt)
-     in DerivedKey (take 32 bytes) (drop 32 bytes)
+     in DerivedKey (take 32 bytes) (take 32 $ drop 32 bytes)
 
 masterKey :: Monad m => Profile -> DerivedKey -> ResultT m MasterKey
 masterKey Profile{pMasterKey=mk} DerivedKey{..} = do

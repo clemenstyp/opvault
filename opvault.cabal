@@ -54,6 +54,7 @@ test-suite opv-spec
   build-depends:       base
                      , opvault
                      , hspec
+                     , transformers
                      , unordered-containers
 
 source-repository head
