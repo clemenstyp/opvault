@@ -3,6 +3,7 @@
 {-# LANGUAGE RecordWildCards #-}
 module Crypto.OPVault.FileSystemSpec where
 
+import Control.Arrow (second)
 import qualified Data.HashMap.Strict as HM (size)
 import Test.Hspec
 
@@ -40,8 +41,8 @@ getVaultSpec = do
     it "returns the same vault and a parsed profile" $ do
       Ctx{..} <- setupTest
       result  <- runResultT $ getVault vault
-      let result' = pUuid . snd <$> result
-      result' `shouldBe` Right "2B894A18997C4638BACC55F2D56A4890"
+      let result' = second pUuid <$> result
+      result' `shouldBe` Right (vault, "2B894A18997C4638BACC55F2D56A4890")
 
   context "when provided a vault that doesn't exist" $
     it "fails as it cannot find any needed files" $ do
