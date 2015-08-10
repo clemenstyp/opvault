@@ -14,6 +14,7 @@ addons:
 
 install:
   - ./.travis_long stack --no-terminal --skip-ghc-check setup
+  - ./.travis_long stack --no-terminal --skip-ghc-check build
   - ./.travis_long stack --no-terminal --skip-ghc-check test --only-snapshot
 
 script:
