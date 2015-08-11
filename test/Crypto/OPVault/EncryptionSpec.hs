@@ -2,7 +2,7 @@
 {-# LANGUAGE RecordWildCards #-}
 module Crypto.OPVault.EncryptionSpec where
 
-import Control.Monad.IO.Class (liftIO)
+import qualified Data.HashMap.Strict as HM (size)
 import Paths_opvault
 import Test.Hspec
 
@@ -10,6 +10,7 @@ import Crypto.OPVault
 
 data TestContext = Ctx
   { profile     :: Profile
+  , vault       :: Vault
   , password    :: Password
   , badPassword :: Password
   }
@@ -21,7 +22,7 @@ forceEither _ = undefined
 setupTest :: IO TestContext
 setupTest = do
   (vault, profile) <-
-    fmap forceEither . runResultT . getVault =<< 
+    fmap forceEither . runResultT . getVault =<<
     VaultPath <$> liftIO (getDataFileName "test-vault/default")
   let password = "freddy"
   let badPassword = "notcorrect"
@@ -29,9 +30,10 @@ setupTest = do
 
 spec :: Spec
 spec = do
-  describe "derivedKey"  derivedKeySpec
-  describe "masterKey"   masterKeySpec
-  describe "overviewKey" overviewKeySpec
+  describe "derivedKey"    derivedKeySpec
+  describe "masterKey"     masterKeySpec
+  describe "overviewKey"   overviewKeySpec
+  describe "makeItemIndex" makeItemIndexSpec
 
 derivedKeySpec :: Spec
 derivedKeySpec =
@@ -71,3 +73,17 @@ overviewKeySpec =
       fmap oMAC key `shouldBe`
         Right "\211 \238)\144\&6\208\151\223\161A\214\SOi\230\167\180\r.s)\141\
               \\175f\158\&5DAH\190>\174"
+
+makeItemIndexSpec :: Spec
+makeItemIndexSpec =
+  context "provided an item map and a valid overview key" $
+    it "returns the ItemIndex to provide for easy lookups" $ do
+      Ctx{..} <- setupTest
+
+      itemMap <- runResultT $ do
+        items <- getItems vault
+        key   <- overviewKey profile (derivedKey profile password)
+        makeItemIndex items key
+
+      let mapSize (ItemIndex (x, _)) = HM.size x
+      mapSize <$> itemMap `shouldBe` Right 28
