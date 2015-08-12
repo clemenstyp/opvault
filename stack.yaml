@@ -3,4 +3,4 @@ packages:
 - '.'
 extra-deps:
 - hspec-2.1.10
-resolver: nightly-2015-08-04
+resolver: nightly-2015-08-10
