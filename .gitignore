@@ -4,6 +4,11 @@
 # Stack is kind of wonderful
 .stack-work/
 
+# Support cabal as well
+.cabal-sandbox/
+cabal.sandbox.config
+dist/
+
 # No more swp files from vim
 *.swp
 
