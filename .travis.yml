@@ -23,3 +23,7 @@ script:
 after-script:
   - stack install hpc-coveralls
   - hpc-coveralls opv-spec
+
+cache:
+  directories:
+  - $HOME/.stack
