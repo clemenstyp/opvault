@@ -25,7 +25,6 @@ library
                      , Crypto.OPVault.Types.Common
                      , Crypto.OPVault.Types.Encryption
                      , Crypto.OPVault.Types.FileTypes
-                     , Crypto.OPVault.Types.ItemIndex
                      , Crypto.OPVault.Types.Opdata01
                      , Crypto.OPVault.Types.ResultT
   default-language:    Haskell2010

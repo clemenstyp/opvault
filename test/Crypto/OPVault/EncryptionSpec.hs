@@ -3,7 +3,7 @@
 module Crypto.OPVault.EncryptionSpec where
 
 import Data.Either (isRight)
-import qualified Data.HashMap.Strict as HM (fromList, lookup, size, toList)
+import qualified Data.HashMap.Strict as HM (fromList, lookup, toList)
 import qualified Data.Vector as V (length, (!))
 import Paths_opvault
 import Test.Hspec

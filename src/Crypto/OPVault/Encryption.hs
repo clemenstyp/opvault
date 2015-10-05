@@ -82,9 +82,3 @@ itemDetails Item{..} ItemKey{..} =
     liftMaybe "Could not decode encrypted details." . decode . fromStrict =<<
     opDecrypt iKey =<<
     opdata iDetails
-
-flipAssoc :: (Eq v, Hashable v) => [(k, Object)] -> (Text -> v) -> Text ->  HashMap v k
-flipAssoc mapList wrap innerKey =
-    HM.fromList . catMaybes . flip fmap mapList . uncurry $
-         \k v -> (\v' -> (wrap v', k)) <$> lookupStr innerKey v
-

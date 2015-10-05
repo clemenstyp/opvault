@@ -4,8 +4,6 @@ module Crypto.OPVault.FileSystem
     ( getItems
     , getFolderFile
     , getVault
-    , IndexKey(..)
-    , itemLookup
     ) where
 
 import Prelude hiding (readFile)
