@@ -4,9 +4,8 @@ module Crypto.OPVault.Types.Opdata01
     (Opdata01(..), opdata, opDecrypt) where
 
 import Prelude hiding (drop, length, take)
-import Control.Applicative ((<$>))
 import qualified Data.Attoparsec.ByteString.Char8 as A (take, endOfInput, parseOnly, string, Parser)
-import Data.ByteString (ByteString, drop, length, take, unpack)
+import Data.ByteString (ByteString, drop, unpack)
 
 import Crypto.Cipher.AES (AES256)
 import Crypto.Cipher.Types (cbcDecrypt, cipherInit, makeIV)
@@ -48,7 +47,7 @@ padSize len = aesBlockSize - len `mod` aesBlockSize
 
 littleEndian :: ByteString -> Int
 littleEndian =
-    let pos = fmap (256^) [0..]
+    let pos = fmap (256^) [(0::Int)..]
      in sum . zipWith (*) pos . fmap fromIntegral . unpack
 
 aesBlockSize :: Int

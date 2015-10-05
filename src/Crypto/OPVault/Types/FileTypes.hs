@@ -1,10 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Crypto.OPVault.Types.FileTypes where
 
-import Data.Aeson (FromJSON(..), Value(..), (.:))
-import Data.Aeson.Types (Parser)
-import Data.Maybe (fromMaybe)
-
 import Crypto.OPVault.Types.Base64
 import Crypto.OPVault.Types.Common
 
@@ -33,6 +29,7 @@ instance FromJSON Profile where
         obj .: "masterKey"     <*>
         obj .: "overviewKey"   <*>
         obj .: "salt"
+    parseJSON _ = mzero
 
 data Folder = Folder
     { fUUID     :: Text
@@ -50,6 +47,7 @@ instance FromJSON Folder where
         obj .: "updated" <*>
         obj .: "tx"      <*>
         obj .: "overview"
+    parseJSON _ = mzero
 
 data Item = Item
     { iUUID     :: Text
@@ -76,6 +74,7 @@ instance FromJSON Item where
         obj .: "d"        <*>
         obj .: "k"        <*>
         obj .: "o"
+    parseJSON _ = mzero
 
 type ItemMap = HashMap Text Item
 type FolderMap = HashMap Text Folder

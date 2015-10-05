@@ -2,7 +2,6 @@ module Crypto.OPVault.Types.Base64
     ( Base64 (rawBytes)
     ) where
 
-import Data.ByteString.Char8 (unpack)
 import qualified Data.ByteString.Base64 as B64 (encode, decode)
 import Data.Text.Encoding (encodeUtf8)
 

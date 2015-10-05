@@ -12,14 +12,9 @@ module Crypto.OPVault.Encryption
 
 import Prelude hiding (drop, length, take)
 import Data.Aeson (decode)
-import Data.ByteArray (ByteArrayAccess, convert, length, View, view)
-import Data.ByteString (length, drop, take)
+import Data.ByteArray (ByteArrayAccess, convert, view)
+import Data.ByteString (drop, take)
 import Data.ByteString.Lazy (fromStrict)
-import qualified Data.HashMap.Strict as HM (fromList, toList)
-import Data.Hashable (Hashable)
-import Data.Maybe (catMaybes)
-import Data.String (IsString(..))
-import Data.Text.Encoding (encodeUtf8)
 
 import Crypto.Cipher.AES (AES256)
 import Crypto.Cipher.Types (cbcDecrypt, cipherInit, makeIV)
@@ -64,7 +59,8 @@ itemKey Item{..} MasterKey{..} = do
 
     let iv   = view raw 0  16
     let dat  = view raw 16 64
-    let mac  = view raw 80 32
+    -- TODO: Actually do MAC checking
+    -- let mac  = view raw 80 32
 
     ctx <- liftCrypto $ cipherInit mKey
     iv' <- liftMaybe "Could not create IV" $ makeIV iv

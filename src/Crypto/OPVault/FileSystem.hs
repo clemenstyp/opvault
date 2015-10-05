@@ -8,23 +8,18 @@ module Crypto.OPVault.FileSystem
 
 import Prelude hiding (readFile)
 
-import Control.Applicative ((<|>), (*>), (<*))
+import Control.Applicative ((<|>))
 import Control.Concurrent.Async (Concurrently(..))
 import Control.Exception (IOException, catch)
 import Control.Monad ((<=<))
-import Data.Aeson (FromJSON, decode)
+import Data.Aeson (decode)
 import Data.Attoparsec.ByteString.Char8 (Parser, parseOnly, endOfInput, string, char, many', many1', satisfy)
-import Data.ByteString.Char8 (ByteString, pack)
 import qualified Data.ByteString.Char8 as B (readFile)
 import Data.ByteString.Lazy (fromStrict)
-import Data.Char (chr)
 import Data.Foldable (foldl')
-import Data.Hashable (Hashable(..))
-import qualified Data.HashMap.Strict as HM (union, toList, fromList, empty, lookup)
+import qualified Data.HashMap.Strict as HM (union, empty)
 import Data.Maybe (catMaybes)
-import System.Environment (lookupEnv)
 
-import Crypto.OPVault.Encryption
 import Crypto.OPVault.Types
 
 parseProfile :: Parser ByteString

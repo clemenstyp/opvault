@@ -1,7 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 module Crypto.OPVault.Types.ResultT where
 
-import Control.Monad ((<=<), liftM)
+import Control.Monad (liftM)
 import Control.Monad.Catch (MonadThrow(..))
 import Control.Monad.IO.Class (MonadIO(..))
 import Control.Monad.Trans.Class (MonadTrans(..))
@@ -19,8 +19,8 @@ instance Monad m => Applicative (ResultT m) where
         x  <- runResultT resX
         case (fn, x) of
           (Right fn',  Right x')  -> return . Right $ fn' x'
-          (Left x, _) -> return $ Left x
-          (_, Left x) -> return $ Left x
+          (Left y, _) -> return $ Left y
+          (_, Left y) -> return $ Left y
 
 instance Monad m => Monad (ResultT m) where
     return    = pure
@@ -42,7 +42,7 @@ instance Monad m => MonadThrow (ResultT m) where
 doResult :: ResultT IO () -> IO ()
 doResult x =
     runResultT x >>=
-    \case Left x   -> putStrLn x
+    \case Left y   -> putStrLn y
           Right () -> return ()
 
 failure :: Monad m => String -> ResultT m a
