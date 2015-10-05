@@ -20,7 +20,7 @@ install:
 script:
   - stack --no-terminal --skip-ghc-check test
 
-after-script:
+after_script:
   - stack install hpc-coveralls
   - hpc-coveralls opv-spec
 
