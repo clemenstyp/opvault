@@ -108,7 +108,6 @@ itemDetailsSpec =
 
       eitherDetails <- runResultT $ do
         item   <- fmap (snd . (!! 3) . HM.toList) $ getItems vault
-        io $ print $ iUUID item
         master <- masterKey profile (derivedKey profile password)
         key    <- itemKey item master
         itemDetails item key
