@@ -5,7 +5,6 @@ module Crypto.OPVault.FileSystem
     , getFolderFile
     , getVault
     , IndexKey(..)
-    , makeItemIndex
     , itemLookup
     ) where
 

@@ -77,6 +77,10 @@ instance FromJSON Item where
         obj .: "k"        <*>
         obj .: "o"
 
+type ItemMap = HashMap Text Item
+type FolderMap = HashMap Text Folder
+
+{-
 data ItemDetails = ItemDetails
     { iBackupKeys :: [Base64]
     , iFields     :: [ItemField]
@@ -125,9 +129,7 @@ instance FromJSON FieldType where
         _   -> Unknown
     parseJSON _ = mzero
 
-type ItemMap = HashMap Text Item
-type FolderMap = HashMap Text Folder
-
 (.~) :: FromJSON a => Object -> Text -> Parser [a]
 obj .~ key =
     fromMaybe [] <$> obj .:? key
+-}

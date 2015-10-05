@@ -8,7 +8,6 @@ module Crypto.OPVault.Encryption
     , itemKey
     , itemOverview
     , itemDetails
-    , makeItemIndex
     ) where
 
 import Prelude hiding (drop, length, take)
@@ -78,7 +77,7 @@ itemOverview Item{..} OverviewKey{..} = do
     raw <- opDecrypt oKey op
     liftMaybe "Could not decode item overview" $ decode (fromStrict raw)
 
-itemDetails :: Monad m => Item -> ItemKey -> ResultT m ItemDetails
+itemDetails :: Monad m => Item -> ItemKey -> ResultT m Object --ItemDetails
 itemDetails Item{..} ItemKey{..} =
     liftMaybe "Could not decode encrypted details." . decode . fromStrict =<<
     opDecrypt iKey =<<
@@ -88,10 +87,4 @@ flipAssoc :: (Eq v, Hashable v) => [(k, Object)] -> (Text -> v) -> Text ->  Hash
 flipAssoc mapList wrap innerKey =
     HM.fromList . catMaybes . flip fmap mapList . uncurry $
          \k v -> (\v' -> (wrap v', k)) <$> lookupStr innerKey v
-
-makeItemIndex :: Monad m => HashMap Text Item -> OverviewKey -> ResultT m ItemIndex
-makeItemIndex itemMap key = do
-    ml <- sequence $ (\(k,v) -> (,) k <$> itemOverview v key) <$> HM.toList itemMap
-    let uuidAssoc = flipAssoc ml Title "title"
-    return $ ItemIndex (uuidAssoc, itemMap)
 
