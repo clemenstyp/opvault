@@ -2,7 +2,9 @@
 {-# LANGUAGE RecordWildCards #-}
 module Crypto.OPVault.EncryptionSpec where
 
-import qualified Data.HashMap.Strict as HM (size)
+import Data.Either (isRight)
+import qualified Data.HashMap.Strict as HM (fromList, lookup, size, toList)
+import qualified Data.Vector as V (length, (!))
 import Paths_opvault
 import Test.Hspec
 
@@ -33,7 +35,8 @@ spec = do
   describe "derivedKey"    derivedKeySpec
   describe "masterKey"     masterKeySpec
   describe "overviewKey"   overviewKeySpec
-  describe "makeItemIndex" makeItemIndexSpec
+  describe "itemKey"       itemKeySpec
+  describe "itemDetails"   itemDetailsSpec
 
 derivedKeySpec :: Spec
 derivedKeySpec =
@@ -74,16 +77,59 @@ overviewKeySpec =
         Right "\211 \238)\144\&6\208\151\223\161A\214\SOi\230\167\180\r.s)\141\
               \\175f\158\&5DAH\190>\174"
 
-makeItemIndexSpec :: Spec
-makeItemIndexSpec =
-  context "provided an item map and a valid overview key" $
-    it "returns the ItemIndex to provide for easy lookups" $ do
+chooseItem :: HashMap Text Item -> ResultT IO Item
+chooseItem =
+  liftMaybe "Could not find dummy item" .
+  HM.lookup "EC0A40400ABB4B16926B7417E95C9669"
+
+itemKeySpec :: Spec
+itemKeySpec =
+  context "When provided a vault item and a master key" $
+    it "returns the decryption key for an item" $ do
       Ctx{..} <- setupTest
 
-      itemMap <- runResultT $ do
-        items <- getItems vault
-        key   <- overviewKey profile (derivedKey profile password)
-        makeItemIndex items key
+      key <- runResultT $ do
+        item   <- chooseItem =<< getItems vault
+        master <- masterKey profile (derivedKey profile password)
+        itemKey item master
 
-      let mapSize (ItemIndex (x, _)) = HM.size x
-      mapSize <$> itemMap `shouldBe` Right 28
+      fmap iKey key `shouldBe`
+        Right "\r\ESC\tD\145\177\237\244\168-\144Z\183<\173\&3E[\CAN\236\195\226\
+              \\DC35\230\ENQ\159?&vP\f"
+      fmap iMAC key `shouldBe`
+        Right "\147\CAN\233\236\228&\225\231\189\242}\237o6\199\203\206\\1\229\
+              \\137s\249|\ENQ\140\203H\149\NAK\194\&4"
+
+itemDetailsSpec :: Spec
+itemDetailsSpec =
+  context "When provided an item and an item key" $
+    it "returns the decrypted item details for an item" $ do
+      Ctx{..} <- setupTest
+
+      eitherDetails <- runResultT $ do
+        item   <- fmap (snd . (!! 3) . HM.toList) $ getItems vault
+        io $ print $ iUUID item
+        master <- masterKey profile (derivedKey profile password)
+        key    <- itemKey item master
+        itemDetails item key
+
+      eitherDetails `shouldSatisfy` isRight
+      let details = forceEither eitherDetails
+
+      -- TODO: Due to the loose typing situation, this needs some serious cleanup.
+      let Just (Array vec) = HM.lookup ("fields" :: Text) details
+      V.length vec `shouldBe` 2
+
+      let field1 = vec V.! 0
+      let field2 = vec V.! 1
+
+      field1 `shouldBe` Object (HM.fromList [ ("designation", String "username")
+                                              , ("value", String "WendyAppleseed")
+                                                , ("name", String "username")
+                                                  , ("type", String "T")
+                                                    ])
+      field2 `shouldBe` Object (HM.fromList [ ("designation", String "password")
+                                              , ("value", String "reTDx8KHhW8eAc")
+                                                , ("name", String "password")
+                                                  , ("type", String "T")
+                                                    ])
