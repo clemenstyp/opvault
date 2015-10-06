@@ -43,4 +43,3 @@ data ItemKey = ItemKey
 
 instance Show ItemKey where
     show = const "ItemKey <...>"
-

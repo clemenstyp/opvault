@@ -1,32 +1,27 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Crypto.OPVault.FileSystem
     ( getItems
     , getFolderFile
     , getVault
-    , IndexKey(..)
-    , makeItemIndex
-    , itemLookup
     ) where
 
 import Prelude hiding (readFile)
 
-import Control.Applicative ((<|>), (*>), (<*))
-import Control.Concurrent.Async (Concurrently(..))
-import Control.Exception (IOException, catch)
-import Data.Aeson (FromJSON, decode)
-import Data.Attoparsec.ByteString.Char8 (Parser, parseOnly, endOfInput, string, char, many', many1', satisfy)
-import Data.ByteString.Char8 (ByteString, pack)
-import qualified Data.ByteString.Char8 as B (readFile)
-import Data.ByteString.Lazy (fromStrict)
-import Data.Char (chr)
-import Data.Foldable (foldl')
-import Data.Hashable (Hashable(..))
-import qualified Data.HashMap.Strict as HM (union, toList, fromList, empty, lookup)
-import Data.Maybe (catMaybes)
-import System.Environment (lookupEnv)
+import Control.Applicative              ((<|>))
+import Control.Concurrent.Async         (Concurrently (..))
+import Control.Exception                (IOException, catch)
+import Control.Monad                    ((<=<))
+import Data.Aeson                       (decode)
+import Data.Attoparsec.ByteString.Char8 (Parser, char, endOfInput, many',
+                                         many1', parseOnly, satisfy, string)
+import Data.ByteString.Lazy             (fromStrict)
+import Data.Foldable                    (foldl')
+import Data.Maybe                       (catMaybes)
 
-import Crypto.OPVault.Encryption
+import qualified Data.ByteString.Char8 as B (readFile)
+import qualified Data.HashMap.Strict   as HM (empty, union)
+
 import Crypto.OPVault.Types
 
 parseProfile :: Parser ByteString
@@ -56,7 +51,7 @@ readFile' path = catch
     (\(_::IOException) -> return . Left $ "Unable to read file at " ++ path)
 
 readFile :: MonadIO m => FilePath -> ResultT m ByteString
-readFile = liftEitherM . io . readFile'
+readFile = liftEither <=< io . readFile'
 
 dropLeft :: Either a b -> Maybe b
 dropLeft (Left _)  = Nothing

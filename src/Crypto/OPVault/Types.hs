@@ -1,7 +1,7 @@
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE KindSignatures             #-}
+{-# LANGUAGE LambdaCase                 #-}
+{-# LANGUAGE OverloadedStrings          #-}
 module Crypto.OPVault.Types
    ( module Crypto.OPVault.Types
    , module Common
@@ -11,11 +11,10 @@ import Crypto.OPVault.Types.Base64     as Common
 import Crypto.OPVault.Types.Common     as Common
 import Crypto.OPVault.Types.Encryption as Common
 import Crypto.OPVault.Types.FileTypes  as Common
-import Crypto.OPVault.Types.ItemIndex  as Common
 import Crypto.OPVault.Types.Opdata01   as Common
 import Crypto.OPVault.Types.ResultT    as Common
 
-import Control.Concurrent.Async (Concurrently(..))
+import Control.Concurrent.Async (Concurrently (..))
 
 newtype Vault = VaultPath String deriving (Show, Eq)
 

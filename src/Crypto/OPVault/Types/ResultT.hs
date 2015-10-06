@@ -1,11 +1,11 @@
 {-# LANGUAGE LambdaCase #-}
 module Crypto.OPVault.Types.ResultT where
 
-import Control.Monad ((<=<), liftM)
-import Control.Monad.Catch (MonadThrow(..))
-import Control.Monad.IO.Class (MonadIO(..))
-import Control.Monad.Trans.Class (MonadTrans(..))
-import Crypto.Error (CryptoFailable, eitherCryptoError)
+import Control.Monad             (liftM)
+import Control.Monad.Catch       (MonadThrow (..))
+import Control.Monad.IO.Class    (MonadIO (..))
+import Control.Monad.Trans.Class (MonadTrans (..))
+import Crypto.Error              (CryptoFailable, eitherCryptoError)
 
 data ResultT m a = ResultT { runResultT :: m (Either String a) }
 
@@ -19,8 +19,8 @@ instance Monad m => Applicative (ResultT m) where
         x  <- runResultT resX
         case (fn, x) of
           (Right fn',  Right x')  -> return . Right $ fn' x'
-          (Left x, _) -> return $ Left x
-          (_, Left x) -> return $ Left x
+          (Left y, _) -> return $ Left y
+          (_, Left y) -> return $ Left y
 
 instance Monad m => Monad (ResultT m) where
     return    = pure
@@ -42,7 +42,7 @@ instance Monad m => MonadThrow (ResultT m) where
 doResult :: ResultT IO () -> IO ()
 doResult x =
     runResultT x >>=
-    \case Left x   -> putStrLn x
+    \case Left y   -> putStrLn y
           Right () -> return ()
 
 failure :: Monad m => String -> ResultT m a
@@ -55,19 +55,13 @@ catResults (r:rs) =
           Right x -> (x:) <$> catResults rs
 catResults [] = return []
 
-liftEither :: (Show s, Monad m) => Either s a -> ResultT m a
-liftEither (Left l)  = ResultT . return . Left $ show l
+liftEither :: Monad m => Either String a -> ResultT m a
+liftEither (Left l)  = ResultT . return . Left $ l
 liftEither (Right r) = ResultT . return $ Right r
-
-liftEitherM :: (Show s, Monad m) => m (Either s a) -> ResultT m a
-liftEitherM = liftEither <=< lift
 
 liftMaybe :: Monad m => String -> Maybe a -> ResultT m a
 liftMaybe _   (Just x) = ResultT . return $ Right x
 liftMaybe str _        = ResultT . return $ Left  str
-
-liftMaybeT :: Monad m => String -> m (Maybe a) -> ResultT m a
-liftMaybeT str = liftMaybe str <=< lift
 
 liftCrypto :: Monad m => CryptoFailable a -> ResultT m a
 liftCrypto c =

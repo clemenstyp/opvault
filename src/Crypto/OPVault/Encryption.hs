@@ -1,5 +1,5 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
 module Crypto.OPVault.Encryption
     ( derivedKey
     , masterKey
@@ -8,24 +8,18 @@ module Crypto.OPVault.Encryption
     , itemKey
     , itemOverview
     , itemDetails
-    , makeItemIndex
     ) where
 
-import Prelude hiding (drop, length, take)
-import Data.Aeson (decode)
-import Data.ByteArray (ByteArrayAccess, convert, length, View, view)
-import Data.ByteString (length, drop, take)
+import Data.Aeson           (decode)
+import Data.ByteArray       (ByteArrayAccess, convert, view)
+import Data.ByteString      (drop, take)
 import Data.ByteString.Lazy (fromStrict)
-import qualified Data.HashMap.Strict as HM (fromList, toList)
-import Data.Hashable (Hashable)
-import Data.Maybe (catMaybes)
-import Data.String (IsString(..))
-import Data.Text.Encoding (encodeUtf8)
+import Prelude              hiding (drop, length, take)
 
-import Crypto.Cipher.AES (AES256)
+import Crypto.Cipher.AES   (AES256)
 import Crypto.Cipher.Types (cbcDecrypt, cipherInit, makeIV)
-import Crypto.Hash (SHA512(..), Digest, hash)
-import Crypto.KDF.PBKDF2 (Parameters(..), generate, prfHMAC)
+import Crypto.Hash         (Digest, SHA512 (..), hash)
+import Crypto.KDF.PBKDF2   (Parameters (..), generate, prfHMAC)
 
 import Crypto.OPVault.Types
 
@@ -38,7 +32,7 @@ derivedKey Profile{..} (Password pass) =
                          (Parameters pIterations 512)
                          pass
                          (rawBytes pSalt)
-     in DerivedKey (take 32 bytes) (drop 32 bytes)
+     in DerivedKey (take 32 bytes) (take 32 $ drop 32 bytes)
 
 masterKey :: Monad m => Profile -> DerivedKey -> ResultT m MasterKey
 masterKey Profile{pMasterKey=mk} DerivedKey{..} = do
@@ -65,7 +59,8 @@ itemKey Item{..} MasterKey{..} = do
 
     let iv   = view raw 0  16
     let dat  = view raw 16 64
-    let mac  = view raw 80 32
+    -- TODO: Actually do MAC checking
+    -- let mac  = view raw 80 32
 
     ctx <- liftCrypto $ cipherInit mKey
     iv' <- liftMaybe "Could not create IV" $ makeIV iv
@@ -78,20 +73,8 @@ itemOverview Item{..} OverviewKey{..} = do
     raw <- opDecrypt oKey op
     liftMaybe "Could not decode item overview" $ decode (fromStrict raw)
 
-itemDetails :: Monad m => Item -> ItemKey -> ResultT m ItemDetails
+itemDetails :: Monad m => Item -> ItemKey -> ResultT m Object --ItemDetails
 itemDetails Item{..} ItemKey{..} =
     liftMaybe "Could not decode encrypted details." . decode . fromStrict =<<
     opDecrypt iKey =<<
     opdata iDetails
-
-flipAssoc :: (Eq v, Hashable v) => [(k, Object)] -> (Text -> v) -> Text ->  HashMap v k
-flipAssoc mapList wrap innerKey =
-    HM.fromList . catMaybes . flip fmap mapList . uncurry $
-         \k v -> (\v' -> (wrap v', k)) <$> lookupStr innerKey v
-
-makeItemIndex :: Monad m => HashMap Text Item -> OverviewKey -> ResultT m ItemIndex
-makeItemIndex itemMap key = do
-    ml <- sequence $ (\(k,v) -> (,) k <$> itemOverview v key) <$> HM.toList itemMap
-    let uuidAssoc = flipAssoc ml Title "title"
-    return $ ItemIndex (uuidAssoc, itemMap)
-

@@ -1,10 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Crypto.OPVault.Types.FileTypes where
 
-import Data.Aeson (FromJSON(..), Value(..), (.:))
-import Data.Aeson.Types (Parser)
-import Data.Maybe (fromMaybe)
-
 import Crypto.OPVault.Types.Base64
 import Crypto.OPVault.Types.Common
 
@@ -14,7 +10,6 @@ data Profile = Profile
     , pUpdatedAt     :: Int
     , pLastUpdatedBy :: Text
     , pProfileName   :: Text
-    , pPasswordHint  :: Text
 
     , pIterations    :: Int
     , pMasterKey     :: Base64
@@ -30,11 +25,11 @@ instance FromJSON Profile where
         obj .: "updatedAt"     <*>
         obj .: "lastUpdatedBy" <*>
         obj .: "profileName"   <*>
-        obj .: "passwordHint"  <*>
         obj .: "iterations"    <*>
         obj .: "masterKey"     <*>
         obj .: "overviewKey"   <*>
         obj .: "salt"
+    parseJSON _ = mzero
 
 data Folder = Folder
     { fUUID     :: Text
@@ -52,6 +47,7 @@ instance FromJSON Folder where
         obj .: "updated" <*>
         obj .: "tx"      <*>
         obj .: "overview"
+    parseJSON _ = mzero
 
 data Item = Item
     { iUUID     :: Text
@@ -78,7 +74,12 @@ instance FromJSON Item where
         obj .: "d"        <*>
         obj .: "k"        <*>
         obj .: "o"
+    parseJSON _ = mzero
 
+type ItemMap = HashMap Text Item
+type FolderMap = HashMap Text Folder
+
+{-
 data ItemDetails = ItemDetails
     { iBackupKeys :: [Base64]
     , iFields     :: [ItemField]
@@ -127,9 +128,7 @@ instance FromJSON FieldType where
         _   -> Unknown
     parseJSON _ = mzero
 
-type ItemMap = HashMap Text Item
-type FolderMap = HashMap Text Folder
-
 (.~) :: FromJSON a => Object -> Text -> Parser [a]
 obj .~ key =
     fromMaybe [] <$> obj .:? key
+-}
