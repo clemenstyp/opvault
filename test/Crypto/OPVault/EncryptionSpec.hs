@@ -1,12 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards   #-}
 module Crypto.OPVault.EncryptionSpec where
 
-import Data.Either (isRight)
-import qualified Data.HashMap.Strict as HM (fromList, lookup, toList)
-import qualified Data.Vector as V (length, (!))
+import Data.Either   (isRight)
 import Paths_opvault
 import Test.Hspec
+
+import qualified Data.HashMap.Strict as HM (fromList, lookup)
+import qualified Data.Vector         as V (length, (!))
 
 import Crypto.OPVault
 
@@ -107,7 +108,7 @@ itemDetailsSpec =
       Ctx{..} <- setupTest
 
       eitherDetails <- runResultT $ do
-        item   <- fmap (snd . (!! 3) . HM.toList) $ getItems vault
+        item   <- chooseItem =<< getItems vault
         master <- masterKey profile (derivedKey profile password)
         key    <- itemKey item master
         itemDetails item key

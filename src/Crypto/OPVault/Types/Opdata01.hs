@@ -3,11 +3,13 @@
 module Crypto.OPVault.Types.Opdata01
     (Opdata01(..), opdata, opDecrypt) where
 
-import Prelude hiding (drop, length, take)
-import qualified Data.Attoparsec.ByteString.Char8 as A (take, endOfInput, parseOnly, string, Parser)
 import Data.ByteString (ByteString, drop, unpack)
+import Prelude         hiding (drop, length, take)
 
-import Crypto.Cipher.AES (AES256)
+import qualified Data.Attoparsec.ByteString.Char8 as A (Parser, endOfInput,
+                                                        parseOnly, string, take)
+
+import Crypto.Cipher.AES   (AES256)
 import Crypto.Cipher.Types (cbcDecrypt, cipherInit, makeIV)
 
 import Crypto.OPVault.Types.Base64

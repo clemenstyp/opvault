@@ -1,14 +1,15 @@
+{-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards   #-}
 module Crypto.OPVault.FileSystemSpec where
 
 import Control.Arrow (second)
-import qualified Data.HashMap.Strict as HM (size)
 import Test.Hspec
 
-import Crypto.OPVault.Types
+import qualified Data.HashMap.Strict as HM (size)
+
 import Crypto.OPVault.FileSystem
+import Crypto.OPVault.Types
 import Paths_opvault
 
 data TestContext = Ctx

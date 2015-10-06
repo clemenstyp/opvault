@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Crypto.OPVault.FileSystem
     ( getItems
@@ -8,17 +8,19 @@ module Crypto.OPVault.FileSystem
 
 import Prelude hiding (readFile)
 
-import Control.Applicative ((<|>))
-import Control.Concurrent.Async (Concurrently(..))
-import Control.Exception (IOException, catch)
-import Control.Monad ((<=<))
-import Data.Aeson (decode)
-import Data.Attoparsec.ByteString.Char8 (Parser, parseOnly, endOfInput, string, char, many', many1', satisfy)
+import Control.Applicative              ((<|>))
+import Control.Concurrent.Async         (Concurrently (..))
+import Control.Exception                (IOException, catch)
+import Control.Monad                    ((<=<))
+import Data.Aeson                       (decode)
+import Data.Attoparsec.ByteString.Char8 (Parser, char, endOfInput, many',
+                                         many1', parseOnly, satisfy, string)
+import Data.ByteString.Lazy             (fromStrict)
+import Data.Foldable                    (foldl')
+import Data.Maybe                       (catMaybes)
+
 import qualified Data.ByteString.Char8 as B (readFile)
-import Data.ByteString.Lazy (fromStrict)
-import Data.Foldable (foldl')
-import qualified Data.HashMap.Strict as HM (union, empty)
-import Data.Maybe (catMaybes)
+import qualified Data.HashMap.Strict   as HM (empty, union)
 
 import Crypto.OPVault.Types
 

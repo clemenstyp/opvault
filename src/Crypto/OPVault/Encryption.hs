@@ -1,5 +1,5 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
 module Crypto.OPVault.Encryption
     ( derivedKey
     , masterKey
@@ -10,16 +10,16 @@ module Crypto.OPVault.Encryption
     , itemDetails
     ) where
 
-import Prelude hiding (drop, length, take)
-import Data.Aeson (decode)
-import Data.ByteArray (ByteArrayAccess, convert, view)
-import Data.ByteString (drop, take)
+import Data.Aeson           (decode)
+import Data.ByteArray       (ByteArrayAccess, convert, view)
+import Data.ByteString      (drop, take)
 import Data.ByteString.Lazy (fromStrict)
+import Prelude              hiding (drop, length, take)
 
-import Crypto.Cipher.AES (AES256)
+import Crypto.Cipher.AES   (AES256)
 import Crypto.Cipher.Types (cbcDecrypt, cipherInit, makeIV)
-import Crypto.Hash (SHA512(..), Digest, hash)
-import Crypto.KDF.PBKDF2 (Parameters(..), generate, prfHMAC)
+import Crypto.Hash         (Digest, SHA512 (..), hash)
+import Crypto.KDF.PBKDF2   (Parameters (..), generate, prfHMAC)
 
 import Crypto.OPVault.Types
 

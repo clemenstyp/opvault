@@ -1,11 +1,11 @@
 {-# LANGUAGE LambdaCase #-}
 module Crypto.OPVault.Types.ResultT where
 
-import Control.Monad (liftM)
-import Control.Monad.Catch (MonadThrow(..))
-import Control.Monad.IO.Class (MonadIO(..))
-import Control.Monad.Trans.Class (MonadTrans(..))
-import Crypto.Error (CryptoFailable, eitherCryptoError)
+import Control.Monad             (liftM)
+import Control.Monad.Catch       (MonadThrow (..))
+import Control.Monad.IO.Class    (MonadIO (..))
+import Control.Monad.Trans.Class (MonadTrans (..))
+import Crypto.Error              (CryptoFailable, eitherCryptoError)
 
 data ResultT m a = ResultT { runResultT :: m (Either String a) }
 
