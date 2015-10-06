@@ -1,5 +1,5 @@
 module Crypto.OPVault.Types.Base64
-    ( Base64 (rawBytes)
+    ( Base64 (Base64, rawBytes)
     ) where
 
 import Data.Text.Encoding (encodeUtf8)
