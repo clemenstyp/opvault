@@ -20,11 +20,6 @@ install:
 script:
   - stack --no-terminal --skip-ghc-check test
 
-after_script:
-  - ln -s `pwd`/.stack-work/dist dist
-  - stack install hpc-coveralls
-  - hpc-coveralls opv-spec
-
 cache:
   directories:
   - $HOME/.stack
