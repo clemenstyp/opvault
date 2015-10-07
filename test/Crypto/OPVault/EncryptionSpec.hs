@@ -102,8 +102,8 @@ itemKeySpec =
               \\137s\249|\ENQ\140\203H\149\NAK\194\&4"
 
 itemDetailsSpec :: Spec
-itemDetailsSpec =
-  context "When provided an item and an item key" $
+itemDetailsSpec = do
+  context "When provided an item and a vald item key" $
     it "returns the decrypted item details for an item" $ do
       Ctx{..} <- setupTest
 
@@ -133,3 +133,15 @@ itemDetailsSpec =
                                             , ("name", String "password")
                                             , ("type", String "T")
                                             ])
+
+  context "When provided an item and an invalid item key" $
+    it "returns an error after attempting to decrypt the item" $ do
+      Ctx{..} <- setupTest
+
+      eitherDetails <- runResultT $ do
+        item   <- chooseItem =<< getItems vault
+        master <- masterKey profile (derivedKey profile badPassword)
+        key    <- itemKey item master
+        itemDetails item key
+
+      eitherDetails `shouldBe` Left "Could not decode encrypted details."
